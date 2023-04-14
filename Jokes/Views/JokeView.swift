@@ -22,6 +22,8 @@ struct JokeView: View {
         NavigationView {
             VStack {
                 
+                Spacer()
+                
                 if let currentJoke = currentJoke {
                     
                     // Show the joke, if it can be unwrapped (if currentJoke is not nil)
@@ -50,6 +52,25 @@ struct JokeView: View {
                     // Show a spinning wheel indicator until the joke is loaded
                     ProgressView()
                 }
+                
+                Spacer()
+                
+                Button(action: {
+                    // Reset the interface
+                    punchlineOpacity = 0.0
+
+                    Task {
+                        // Get another joke
+                        withAnimation {
+                            currentJoke = nil
+                        }
+                        currentJoke = await NetworkService.fetch()
+                    }
+                }, label: {
+                    Text("Fetch another one")
+                })
+                .disabled(punchlineOpacity == 0.0 ? true : false)
+                .buttonStyle(.borderedProminent)
                 
             }
             .navigationTitle("Random Jokes")
